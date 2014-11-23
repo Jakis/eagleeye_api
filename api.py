@@ -4,9 +4,7 @@ import os
 import json
 from pprint import pprint
 
-# apiURI = 'https://login.eagleeyenetworks.com/g/aaa/authenticate'
-# apiuser = 'demo4@eagleeyenetworks.com'
-# apipassword = 'password'
+"""/// Reading Creds from Config file /////////////////////////////"""
 
 configFile = './eagleeye.json'
 json_data = open(configFile)
@@ -18,25 +16,27 @@ apiURI = (data["apicreds"]["authURI"])
 
 json_data.close()
 
+"""/// Connecting to API //////////////////////////////////////////"""
+
 #Authenticate
-authenticateURI = apiURI + 'g/aaa/authenticate'
 payload = {'username': apiuser, 'password': apipassword}
-r = requests.post(authenticateURI, params=payload)
+r = requests.post((apiURI + 'g/aaa/authenticate'), params=payload)
 
 #Retreive auth token from json response.
 jsonresponse = r.json()
 authtoken = jsonresponse['token']
 
 #Use the auth token to authenticate and retreive a cookie and session id
-#authurl = 'https://login.eagleeyenetworks.com/g/aaa/authorize'
-authorizeURI = apiURI + 'g/aaa/authorize'
 payload = {'token': authtoken}
-r = requests.post(authorizeURI, params=payload)
+r = requests.post((apiURI + 'g/aaa/authorize'), params=payload)
 sessionid = r.cookies['videobank_sessionid']
 
+"""/// Requests ///////////////////////////////////////////////////"""
+
+#Now we can make requests.  Here's an example request for the user list.
 payload = {'A': sessionid}
-r = requests.get('https://login.eagleeyenetworks.com/g/user/list', params=payload)
+r = requests.get((apiURI + 'g/user/list'), params=payload)
 
 response = r.json()
-print response
+#print response
 pprint(response)
