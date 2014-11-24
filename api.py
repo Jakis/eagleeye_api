@@ -18,25 +18,41 @@ json_data.close()
 
 """/// Connecting to API //////////////////////////////////////////"""
 
-#Authenticate
+# Authenticate
 payload = {'username': apiuser, 'password': apipassword}
 r = requests.post((apiURI + 'g/aaa/authenticate'), params=payload)
 
-#Retreive auth token from json response.
+# Retreive auth token from json response.
 jsonresponse = r.json()
 authtoken = jsonresponse['token']
 
-#Use the auth token to authenticate and retreive a cookie and session id
+# Use the auth token to authenticate and retreive a cookie and session id.
 payload = {'token': authtoken}
 r = requests.post((apiURI + 'g/aaa/authorize'), params=payload)
 sessionid = r.cookies['videobank_sessionid']
 
 """/// Requests ///////////////////////////////////////////////////"""
 
-#Now we can make requests.  Here's an example request for the user list.
+# Now we can make requests.  Here's an example request for the user list.
 payload = {'A': sessionid}
 r = requests.get((apiURI + 'g/user/list'), params=payload)
 
-response = r.json()
-#print response
-pprint(response)
+# Store user list
+userlist = r.json()
+
+# Store device list
+payload = {'A': sessionid}
+r = requests.get((apiURI + 'g/device/list'), params=payload)
+devicelist = r.json()
+
+"""/// Retreive list of Cameras and their ID's /////////////////////"""
+cameraIDlist = []
+for item in devicelist:
+    cameraIDlist.append(item[1])
+    print "Camera ID : %r" % (item[1])
+    cameraIDlist.append(item[2])
+    print "Camera Label : %r" % (item[2])
+    print ""
+
+# Targeting the first camera to collect metrics on:
+targetCamera = devicelist[0][1]
