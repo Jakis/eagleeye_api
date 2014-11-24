@@ -49,10 +49,16 @@ devicelist = r.json()
 cameraIDlist = []
 for item in devicelist:
     cameraIDlist.append(item[1])
-    print "Camera ID : %r" % (item[1])
+    #print "Camera ID : %r" % (item[1])
     cameraIDlist.append(item[2])
-    print "Camera Label : %r" % (item[2])
-    print ""
+    #print "Camera Label : %r" % (item[2])
+    #print ""
 
 # Targeting the first camera to collect metrics on:
 targetCamera = devicelist[0][1]
+
+poll_string = { 'cameras': { '10097da5': { "resource": ["pre"] } } }
+post_json = json.dumps(poll_string)
+params = {'A': sessionid}
+r = requests.post((apiURI + '/poll'), data=post_json, params=params)
+print r
